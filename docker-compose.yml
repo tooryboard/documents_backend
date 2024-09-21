@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "documents"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "12345"
+      TZ: Europe/Moscow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    hostname: postgres
+    ports:
+      - 5432:5432
+  documents-app:
+    image: documents
+    build: ./
+    environment:
+      TZ: Europe/Moscow
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+
+volumes:
+  pgdata:

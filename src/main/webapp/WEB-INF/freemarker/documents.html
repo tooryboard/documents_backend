@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Documents</title>
+    <script>
+        function openDocument(documentId) {
+            window.open("/documents/" + documentId + "/versions", "_self");
+        }
+    </script>
+</head>
+<style>
+    body {
+        height: 100%;
+        width: 100%;
+        font-family: Verdana, sans-serif;
+        margin: 0;
+    }
+    .container {
+        width: 1200px;
+        height: calc(100% - 100px);
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        padding: 50px 0;
+    }
+
+    .container-content {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .add-document-form {
+        width: 250px;
+        margin-right: 50px;
+        display: flex;
+        justify-content: left;
+    }
+    input, select {
+        height: 25px;
+        width: calc(100% - 10px);
+        padding: 5px;
+        margin: 5px 0 15px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+    }
+    input:focus {
+        background-color: #ddd;
+        outline: none;
+    }
+    select {
+        height: 35px;
+        max-height: 100px;
+        width: 100%;
+    }
+    textarea {
+        width: calc(100% - 10px);
+        resize: none;
+        padding: 5px;
+        margin: 5px 0 22px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+    }
+    textarea:focus {
+        background-color: #ddd;
+        outline: none;
+    }
+    .actionbtn {
+        background-color: #5237d5;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 35px;
+        opacity: 0.9;
+        font-size: 10pt;
+    }
+    .actionbtn:hover {
+        opacity:1;
+        cursor: pointer;
+    }
+
+    .documents-list {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+    .container-label {
+        color: #5237d5;
+        padding: 5px 10px;
+        margin: 0;
+        font-size: 13pt;
+        text-align: left;
+        cursor: pointer;
+    }
+    .current-container-label {
+        color: #ffffff;
+        background-color: #5237d5;
+    }
+    table {
+        width: 100%;
+        overflow-y: auto;
+        font-size: 10pt;
+        border-collapse: collapse;
+    }
+    hr {
+        height: 3px;
+        background-color: #5237d5;
+        border: none;
+        width: 100%;
+        padding: 0;
+        margin: 0 0 15px;
+    }
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 7px;
+        height: 50px;
+    }
+    th {
+        background-color: #dddddd;
+        height: 20px;
+    }
+    a {
+        text-decoration: none;
+    }
+    .select-document:hover {
+        cursor: pointer;
+        background-color: #dddddd;
+    }
+</style>
+<body>
+<div class="container">
+    <div style="display: flex; flex-direction: row" class="container-head">
+        <a href="/documents" class="container-label current-container-label">Documents</a>
+    </div>
+    <hr>
+    <div class="container-content">
+        <div class="add-document-form", id="document-list">
+            <form action="/documents" method="post" enctype="multipart/form-data">
+                <label for="documentName"><b style="font-size: 10pt">Document name</b></label>
+                <input autocomplete="off" type="text" placeholder="Enter name" name="name" id="documentName" required>
+
+                <label for="documentAuthor"><b style="font-size: 10pt">Document author</b></label>
+                <input autocomplete="off" type="text" placeholder="Enter author" name="author" id="documentAuthor" required>
+
+                <label for="introDocumentNumber"><b style="font-size: 10pt">Document intro number</b></label>
+                <input autocomplete="off" type="text" placeholder="Enter intro number" name="introDocumentNumber" id="introDocumentNumber" required>
+
+                <label for="file"><b style="font-size: 10pt">Document file</b></label>
+                <input id="file" type="file" name="file" accept="*/*" required>
+
+                <button type="submit" class="actionbtn" value="create">Create document</button>
+            </form>
+        </div>
+        <div class="documents-list" style="">
+            <table class="document-table" id="documents-table">
+                <tr>
+                    <th>Intro number</th>
+                    <th>Intro date</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Extern number</th>
+                </tr>
+                <#list model["documents"] as document>
+                <#assign color = "#45d53c">
+                <#if document.externDocumentNumber?has_content>
+                    <#assign color = "#f96848">
+                </#if>
+                    <tr class="document-table" id="document-table" style="background-color: ${color}">
+                        <td class="select-document" onclick="openDocument(${document.id})">${document.introDocumentNumber}</td>
+                        <td>${(document.introDateTime).format('dd.MM.yyyy HH:mm')}</td>
+                        <td>${document.name}</td>
+                        <td>${document.author}</td>
+                        <td>
+                            <#if document.externDocumentNumber?has_content>
+                                ${document.externDocumentNumber}
+                            <#else>
+                                <form action="/documents/${document.id}/disable" method="post">
+                                    <input autocomplete="off" type="text" placeholder="Enter extern number" name="externDocumentNumber" id="externDocumentNumber" required>
+                                    <button type="submit" class="actionbtn" value="create">Disable document</button>
+                                </form>
+                            </#if>
+                        </td>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
