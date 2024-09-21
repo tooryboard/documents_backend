@@ -1,9 +1,7 @@
 Требования:
-
-java 17
-maven
-docker
+- java 17
+- maven
+- docker
 
 Запуск приложения:
-
-запустить скрипт start.sh
+- запустить скрипт start.sh
